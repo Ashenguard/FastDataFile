@@ -19,9 +19,9 @@ class DataFile(BaseDataFile):
 
 class JSONDataFile(DataFile):
     def __new__(cls, file_path: str, create_if_missing: bool = True, default_data=None, encoding='utf8', method: DataMethod = DataMethod.OnClose):
-        super().__new__(cls, file_path, DataFileEncoder.JSON, create_if_missing, default_data, encoding, method)
+        return super().__new__(cls, file_path, DataFileEncoder.JSON, create_if_missing, default_data, encoding, method)
 
 
 class YAMLDataFile(DataFile):
     def __new__(cls, file_path: str, create_if_missing: bool = True, default_data=None, encoding='utf8', method: DataMethod = DataMethod.OnClose):
-        super().__new__(cls, file_path, DataFileEncoder.YAML, create_if_missing, default_data, encoding, method)
+        return super().__new__(cls, file_path, DataFileEncoder.YAML, create_if_missing, default_data, encoding, method)

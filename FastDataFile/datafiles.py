@@ -178,14 +178,14 @@ class OnCloseDataFile(BaseDataFile):
         self.save_data()
 
     def save_data(self, _ignored=False):
-        super(OnCloseDataFile, self).save_data(False)
+        BaseDataFile.save_data(self, False)
 
 
 class OnChangeDataFile(BaseDataFile):
     def get_data(self, path: str = None, cast: Union[type, Callable[[Any], Any]] = None):
         self.load_data()
 
-        value = super(OnChangeDataFile, self).get_data(path, cast)
+        value = BaseDataFile.get_data(self, path, cast)
 
         self._cache = None
 
@@ -194,7 +194,7 @@ class OnChangeDataFile(BaseDataFile):
     def set_data(self, path: str, value, default: bool = False):
         self.load_data()
 
-        super(OnChangeDataFile, self).set_data(path, value, default)
+        BaseDataFile.set_data(self, path, value, default)
 
         self.save_data()
 
