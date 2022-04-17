@@ -18,10 +18,10 @@ class Database(BaseDatabase):
 
 
 class JSONDatabase(Database):
-    def __init__(self, file_path: str, create_if_missing: bool = True, default_data=None, encoding='utf8', method: DataMethod = DataMethod.OnClose):
-        super().__init__(file_path, DatabaseEncoder.JSON, create_if_missing, default_data, encoding, method)
+    def __new__(cls, file_path: str, create_if_missing: bool = True, default_data=None, encoding='utf8', method: DataMethod = DataMethod.OnClose):
+        super().__new__(cls, file_path, DatabaseEncoder.JSON, create_if_missing, default_data, encoding, method)
 
 
 class YAMLDatabase(Database):
-    def __init__(self, file_path: str, create_if_missing: bool = True, default_data=None, encoding='utf8', method: DataMethod = DataMethod.OnClose):
-        super().__init__(file_path, DatabaseEncoder.YAML, create_if_missing, default_data, encoding, method)
+    def __new__(cls, file_path: str, create_if_missing: bool = True, default_data=None, encoding='utf8', method: DataMethod = DataMethod.OnClose):
+        super().__new__(cls, file_path, DatabaseEncoder.YAML, create_if_missing, default_data, encoding, method)
