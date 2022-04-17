@@ -1,6 +1,6 @@
 class DataFileEncoder:
     """
-    Basic parent for all database encoders
+    Basic parent for all datafile encoders
     """
 
     def encode(self, data: dict) -> str:

@@ -18,15 +18,15 @@ class DataFileProperty:
         self.get_wrapper = get_wrapper
         self.set_validator = set_validator
 
-    def fget(self, database: 'BaseDataFile'):
+    def fget(self, datafile: 'BaseDataFile'):
         if self.get_wrapper:
-            return self.get_wrapper(database, database.get_data(self.path, self.cast))
+            return self.get_wrapper(datafile, datafile.get_data(self.path, self.cast))
         else:
-            return database.get_data(self.path, self.cast)
+            return datafile.get_data(self.path, self.cast)
 
-    def fset(self, database: 'BaseDataFile', value):
-        if self.set_validator is None or self.set_validator(database, value):
-            database.set_data(self.path, value)
+    def fset(self, datafile: 'BaseDataFile', value):
+        if self.set_validator is None or self.set_validator(datafile, value):
+            datafile.set_data(self.path, value)
         else:
             raise ValueError(f"value '{value}' is not acceptable by '{self.name}'")
 
@@ -216,12 +216,12 @@ class ThreadSafeDataFile(BaseDataFile):
     @staticmethod
     def __worker():
         while True:
-            for database in ThreadSafeDataFile.__storage.values():
-                if not database._queue.empty():
-                    while not database._queue.empty():
-                        data = database._queue.get()
+            for datafile in ThreadSafeDataFile.__storage.values():
+                if not datafile._queue.empty():
+                    while not datafile._queue.empty():
+                        data = datafile._queue.get()
 
-                        BaseDataFile.set_data(database, data[0], data[1], data[2])
+                        BaseDataFile.set_data(datafile, data[0], data[1], data[2])
 
     def __init__(self, file_path: str, encoder: DataFileEncoder, create_if_missing: bool = True, default_data=None, encoding='utf8'):
         super().__init__(file_path, encoder, create_if_missing, default_data, encoding)

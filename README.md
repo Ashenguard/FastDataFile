@@ -19,14 +19,14 @@
 
 # FastDataFile
 
-This library is a simple library helping you to establish file databases with ease
+This library is a simple library helping you to establish file datafiles with ease
 
 ## How to install
 
 To install just use following command
 
 ```shell
-pip install fastdatabase
+pip install fastdatafile
 ```
 
 If you are looking for latest beta/alpha, you can use following command
@@ -51,7 +51,7 @@ This example JSON file
 }
 ```
 
-Basic example on how fast databases work, `JSONDataFile` is an example here and `YAMLDataFile` is also the same
+Basic example on how fast datafiles work, `JSONDataFile` is an example here and `YAMLDataFile` is also the same
 
 ```py
 from FastDataFile import JSONDataFile
