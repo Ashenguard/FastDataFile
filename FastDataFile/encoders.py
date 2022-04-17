@@ -27,20 +27,20 @@ class __JSONEncoder(DataFileEncoder):
     from json import dumps as dumper, loads as loader
 
     def encode(self, data: dict) -> str:
-        return self.dumper(data, indent=2)
+        return self.__class__.dumper(data, indent=2)
 
     def decode(self, data: str) -> dict:
-        return self.loader(data)
+        return self.__class__.loader(data)
 
 
 class __YAMLEncoder(DataFileEncoder):
     from yaml import safe_dump as dumper, safe_load as loader
 
     def encode(self, data: dict) -> str:
-        return self.dumper(data, indent=2)
+        return self.__class__.dumper(data, indent=2)
 
     def decode(self, data: str) -> dict:
-        return self.loader(data)
+        return self.__class__.loader(data)
 
 
 DataFileEncoder.JSON = __JSONEncoder()

@@ -1,7 +1,8 @@
 import os
 import threading
+import re
 from queue import Queue
-from typing import Callable, Any, Optional, Dict
+from typing import Callable, Any, Dict, Union
 
 from .encoders import DataFileEncoder
 from .exceptions import DataError
@@ -33,7 +34,7 @@ class DataFileProperty:
 
 class BaseDataFile:
     def __init__(self, file_path: str, encoder: DataFileEncoder, create_if_missing: bool = True, default_data=None, encoding='utf8'):
-        self._file_path = file_path
+        self._file_path = file_path if re.match('^\.[/\\\]', file_path) else '.\\' + file_path
         self._encoding = encoding
         self._encoder = encoder
 
@@ -60,7 +61,7 @@ class BaseDataFile:
         with open(file=self._file_path, mode='r', encoding=self._encoding) as file:
             self._cache = self._encoder.decode(file.read())
 
-    def get_data(self, path: str = None, cast: Optional[type, Callable[[Any], Any]] = None):
+    def get_data(self, path: str = None, cast: Union[type, Callable[[Any], Any]] = None):
         data = self._cache.copy()
         if path is None:
             return data
@@ -181,7 +182,7 @@ class OnCloseDataFile(BaseDataFile):
 
 
 class OnChangeDataFile(BaseDataFile):
-    def get_data(self, path: str = None, cast: Optional[type, Callable[[Any], Any]] = None):
+    def get_data(self, path: str = None, cast: Union[type, Callable[[Any], Any]] = None):
         self.load_data()
 
         value = super(OnChangeDataFile, self).get_data(path, cast)
@@ -228,7 +229,7 @@ class ThreadSafeDataFile(BaseDataFile):
 
         self._queue = Queue()
 
-    def get_data(self, path: str = None, cast: Optional[type, Callable[[Any], Any]] = None):
+    def get_data(self, path: str = None, cast: Union[type, Callable[[Any], Any]] = None):
         while not self._queue.empty():
             pass
 
