@@ -1,15 +1,15 @@
 ### Github
 
-![](https://img.shields.io/github/license/Ashengaurd/FastDatabase)
-![](https://img.shields.io/github/v/release/Ashengaurd/FastDatabase)
-![](https://img.shields.io/github/downloads/Ashengaurd/FastDatabase/total)
+![](https://img.shields.io/github/license/Ashengaurd/FastDataFile)
+![](https://img.shields.io/github/v/release/Ashengaurd/FastDataFile)
+![](https://img.shields.io/github/downloads/Ashengaurd/FastDataFile/total)
 ***
 
 ### PYPI
 
-![Downloads](https://static.pepy.tech/personalized-badge/FastDatabase?period=total&units=international_system&left_color=black&right_color=red&left_text=downloads)
-![Downloads](https://static.pepy.tech/personalized-badge/FastDatabase?period=month&units=international_system&left_color=black&right_color=red&left_text=this+month)
-![Downloads](https://static.pepy.tech/personalized-badge/FastDatabase?period=week&units=international_system&left_color=black&right_color=red&left_text=this+week)
+![Downloads](https://static.pepy.tech/personalized-badge/FastDataFile?period=total&units=international_system&left_color=black&right_color=red&left_text=downloads)
+![Downloads](https://static.pepy.tech/personalized-badge/FastDataFile?period=month&units=international_system&left_color=black&right_color=red&left_text=this+month)
+![Downloads](https://static.pepy.tech/personalized-badge/FastDataFile?period=week&units=international_system&left_color=black&right_color=red&left_text=this+week)
 ***
 
 ### Discord
@@ -17,7 +17,7 @@
 [![Discord](https://img.shields.io/discord/690930221930643467?label=discord)](https://discord.gg/6exsySK)
 ***
 
-# FastDatabase
+# FastDataFile
 
 This library is a simple library helping you to establish file databases with ease
 
@@ -32,7 +32,7 @@ pip install fastdatabase
 If you are looking for latest beta/alpha, you can use following command
 
 ```shell
-pip install --upgrade git+https://github.com/Ashengaurd/FastDatabase.git
+pip install --upgrade git+https://github.com/Ashengaurd/FastDataFile.git
 ```
 
 ***
@@ -51,9 +51,10 @@ This example JSON file
 }
 ```
 
-Basic example on how fast databases work, `JSONDatabase` is an example here and `YAMLDatabase` is also the same
+Basic example on how fast databases work, `JSONDataFile` is an example here and `YAMLDataFile` is also the same
+
 ```py
-from FastDatabase import JSONDatabase
+from FastDataFile import JSONDataFile
 
 """
     If you set `create_if_missing` to `True` it will create the file if it's missing and will save the `default_data` in it.
@@ -61,7 +62,7 @@ from FastDatabase import JSONDatabase
     
     Arguments shown here are default values, You can ignore them if you want to use the default values.
 """
-json_db = JSONDatabase('path/to/file.json', create_if_missing=True, default_data=None, encoding='utf8')
+json_db = JSONDataFile('path/to/file.json', create_if_missing=True, default_data=None, encoding='utf8')
 
 """
     Data can be nested tree, You can move in the tree by using `.` as seperator.
@@ -95,7 +96,7 @@ json_db.remove('TestValue')
 json_db.delete(confirm=True)
 ```
 
-You can use `YAMLDatabase` instead of `JSONDatabase` and it will be the same, Just another format of file encoding will be used.
+You can use `YAMLDataFile` instead of `JSONDataFile` and it will be the same, Just another format of file encoding will be used.
 ***
 
-### ❗ There will be more tutorials and examples at [FastDatabase Wiki](https://git.agmdev.xyz/FastDatabase/wiki) ❗
+### ❗ There will be more tutorials and examples at [FastDataFile Wiki](https://git.agmdev.xyz/FastDataFile/wiki) ❗

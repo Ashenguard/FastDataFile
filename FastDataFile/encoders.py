@@ -1,4 +1,4 @@
-class DatabaseEncoder:
+class DataFileEncoder:
     """
     Basic parent for all database encoders
     """
@@ -19,11 +19,11 @@ class DatabaseEncoder:
         """
         raise NotImplementedError()
 
-    JSON: 'DatabaseEncoder' = None
-    YAML: 'DatabaseEncoder' = None
+    JSON: 'DataFileEncoder' = None
+    YAML: 'DataFileEncoder' = None
 
 
-class __JSONEncoder(DatabaseEncoder):
+class __JSONEncoder(DataFileEncoder):
     from json import dumps as dumper, loads as loader
 
     def encode(self, data: dict) -> str:
@@ -33,7 +33,7 @@ class __JSONEncoder(DatabaseEncoder):
         return self.loader(data)
 
 
-class __YAMLEncoder(DatabaseEncoder):
+class __YAMLEncoder(DataFileEncoder):
     from yaml import safe_dump as dumper, safe_load as loader
 
     def encode(self, data: dict) -> str:
@@ -43,5 +43,5 @@ class __YAMLEncoder(DatabaseEncoder):
         return self.loader(data)
 
 
-DatabaseEncoder.JSON = __JSONEncoder()
-DatabaseEncoder.YAML = __YAMLEncoder()
+DataFileEncoder.JSON = __JSONEncoder()
+DataFileEncoder.YAML = __YAMLEncoder()

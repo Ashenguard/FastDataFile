@@ -3,12 +3,12 @@ import threading
 from queue import Queue
 from typing import Callable, Any, Optional, Dict
 
-from .encoders import DatabaseEncoder
+from .encoders import DataFileEncoder
 from .exceptions import DataError
 
 
-class DatabaseProperty:
-    def __init__(self, name, path=None, cast=None, get_wrapper: Callable[['BaseDatabase', Any], Any] = None, set_validator: Callable[['BaseDatabase', Any], bool] = None):
+class DataFileProperty:
+    def __init__(self, name, path=None, cast=None, get_wrapper: Callable[['BaseDataFile', Any], Any] = None, set_validator: Callable[['BaseDataFile', Any], bool] = None):
         if path is None:
             path = name
 
@@ -18,21 +18,21 @@ class DatabaseProperty:
         self.get_wrapper = get_wrapper
         self.set_validator = set_validator
 
-    def fget(self, database: 'BaseDatabase'):
+    def fget(self, database: 'BaseDataFile'):
         if self.get_wrapper:
             return self.get_wrapper(database, database.get_data(self.path, self.cast))
         else:
             return database.get_data(self.path, self.cast)
 
-    def fset(self, database: 'BaseDatabase', value):
+    def fset(self, database: 'BaseDataFile', value):
         if self.set_validator is None or self.set_validator(database, value):
             database.set_data(self.path, value)
         else:
             raise ValueError(f"value '{value}' is not acceptable by '{self.name}'")
 
 
-class BaseDatabase:
-    def __init__(self, file_path: str, encoder: DatabaseEncoder, create_if_missing: bool = True, default_data=None, encoding='utf8'):
+class BaseDataFile:
+    def __init__(self, file_path: str, encoder: DataFileEncoder, create_if_missing: bool = True, default_data=None, encoding='utf8'):
         self._file_path = file_path
         self._encoding = encoding
         self._encoder = encoder
@@ -136,39 +136,39 @@ class BaseDatabase:
     def close(self):
         pass
 
-    def add_property(self, name: str, path: str = None, cast=None, default=None, *, get_wrapper: Callable[['BaseDatabase', Any], Any] = None, set_validator: Callable[['BaseDatabase', Any], bool] = None):
-        setattr(self, name, DatabaseProperty(name, path, cast, get_wrapper, set_validator))
+    def add_property(self, name: str, path: str = None, cast=None, default=None, *, get_wrapper: Callable[['BaseDataFile', Any], Any] = None, set_validator: Callable[['BaseDataFile', Any], bool] = None):
+        setattr(self, name, DataFileProperty(name, path, cast, get_wrapper, set_validator))
         setattr(self, name, default)
 
     def __setattr__(self, key, value):
         try:
-            v = super(BaseDatabase, self).__getattribute__(key)
-            if isinstance(v, DatabaseProperty):
+            v = super(BaseDataFile, self).__getattribute__(key)
+            if isinstance(v, DataFileProperty):
                 v.fset(self, value)
                 return
         except Exception:
             pass
 
-        super(BaseDatabase, self).__setattr__(key, value)
+        super(BaseDataFile, self).__setattr__(key, value)
 
     def __getattribute__(self, item):
-        v = super(BaseDatabase, self).__getattribute__(item)
-        if isinstance(v, DatabaseProperty):
+        v = super(BaseDataFile, self).__getattribute__(item)
+        if isinstance(v, DataFileProperty):
             return v.fget(self)
         else:
             return v
 
 
-class ManualDatabase(BaseDatabase):
+class ManualDataFile(BaseDataFile):
     def get_data(self, path: str = None, cast: type = None):
         if self._cache is None:
             self.load_data()
 
-        return super(ManualDatabase, self).get_data(path, cast)
+        return super(ManualDataFile, self).get_data(path, cast)
 
 
-class OnCloseDatabase(BaseDatabase):
-    def __init__(self, file_path: str, encoder: DatabaseEncoder, create_if_missing: bool = True, default_data=None, encoding='utf8'):
+class OnCloseDataFile(BaseDataFile):
+    def __init__(self, file_path: str, encoder: DataFileEncoder, create_if_missing: bool = True, default_data=None, encoding='utf8'):
         super().__init__(file_path, encoder, create_if_missing, default_data, encoding)
 
         self.load_data()
@@ -177,14 +177,14 @@ class OnCloseDatabase(BaseDatabase):
         self.save_data()
 
     def save_data(self, _ignored=False):
-        super(OnCloseDatabase, self).save_data(False)
+        super(OnCloseDataFile, self).save_data(False)
 
 
-class OnChangeDatabase(BaseDatabase):
+class OnChangeDataFile(BaseDataFile):
     def get_data(self, path: str = None, cast: Optional[type, Callable[[Any], Any]] = None):
         self.load_data()
 
-        value = super(OnChangeDatabase, self).get_data(path, cast)
+        value = super(OnChangeDataFile, self).get_data(path, cast)
 
         self._cache = None
 
@@ -193,37 +193,37 @@ class OnChangeDatabase(BaseDatabase):
     def set_data(self, path: str, value, default: bool = False):
         self.load_data()
 
-        super(OnChangeDatabase, self).set_data(path, value, default)
+        super(OnChangeDataFile, self).set_data(path, value, default)
 
         self.save_data()
 
 
-class ThreadSafeDatabase(BaseDatabase):
-    __storage: Dict[str, 'ThreadSafeDatabase'] = {}
+class ThreadSafeDataFile(BaseDataFile):
+    __storage: Dict[str, 'ThreadSafeDataFile'] = {}
     __thread = None
 
     def __new__(cls, file_path, *args, **kwargs):
-        if not ThreadSafeDatabase.__thread.is_alive():
-            ThreadSafeDatabase.__thread = threading.Thread(target=ThreadSafeDatabase.__worker, daemon=True)
-            ThreadSafeDatabase.__thread.start()
+        if not ThreadSafeDataFile.__thread.is_alive():
+            ThreadSafeDataFile.__thread = threading.Thread(target=ThreadSafeDataFile.__worker, daemon=True)
+            ThreadSafeDataFile.__thread.start()
 
-        if file_path in ThreadSafeDatabase.__storage.keys():
-            return ThreadSafeDatabase.__storage[file_path]
+        if file_path in ThreadSafeDataFile.__storage.keys():
+            return ThreadSafeDataFile.__storage[file_path]
 
-        ThreadSafeDatabase.__storage[file_path] = super().__new__(cls)
-        return ThreadSafeDatabase.__storage[file_path]
+        ThreadSafeDataFile.__storage[file_path] = super().__new__(cls)
+        return ThreadSafeDataFile.__storage[file_path]
 
     @staticmethod
     def __worker():
         while True:
-            for database in ThreadSafeDatabase.__storage.values():
+            for database in ThreadSafeDataFile.__storage.values():
                 if not database._queue.empty():
                     while not database._queue.empty():
                         data = database._queue.get()
 
-                        BaseDatabase.set_data(database, data[0], data[1], data[2])
+                        BaseDataFile.set_data(database, data[0], data[1], data[2])
 
-    def __init__(self, file_path: str, encoder: DatabaseEncoder, create_if_missing: bool = True, default_data=None, encoding='utf8'):
+    def __init__(self, file_path: str, encoder: DataFileEncoder, create_if_missing: bool = True, default_data=None, encoding='utf8'):
         super().__init__(file_path, encoder, create_if_missing, default_data, encoding)
 
         self._queue = Queue()
@@ -232,10 +232,10 @@ class ThreadSafeDatabase(BaseDatabase):
         while not self._queue.empty():
             pass
 
-        return super(ThreadSafeDatabase, self).get_data(path, cast)
+        return super(ThreadSafeDataFile, self).get_data(path, cast)
 
     def set_data(self, path: str, value, default: bool = False):
         self._queue.put((path, value, default))
 
     def close(self):
-        ThreadSafeDatabase.__storage.pop(self._file_path)
+        ThreadSafeDataFile.__storage.pop(self._file_path)
