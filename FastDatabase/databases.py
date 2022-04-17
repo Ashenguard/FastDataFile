@@ -215,12 +215,13 @@ class ThreadSafeDatabase(BaseDatabase):
 
     @staticmethod
     def __worker():
-        for database in ThreadSafeDatabase.__storage.values():
-            if not database._queue.empty():
-                while not database._queue.empty():
-                    data = database._queue.get()
+        while True:
+            for database in ThreadSafeDatabase.__storage.values():
+                if not database._queue.empty():
+                    while not database._queue.empty():
+                        data = database._queue.get()
 
-                    BaseDatabase.set_data(database, data[0], data[1], data[2])
+                        BaseDatabase.set_data(database, data[0], data[1], data[2])
 
     def __init__(self, file_path: str, encoder: DatabaseEncoder, create_if_missing: bool = True, default_data=None, encoding='utf8'):
         super().__init__(file_path, encoder, create_if_missing, default_data, encoding)
@@ -235,3 +236,6 @@ class ThreadSafeDatabase(BaseDatabase):
 
     def set_data(self, path: str, value, default: bool = False):
         self._queue.put((path, value, default))
+
+    def close(self):
+        ThreadSafeDatabase.__storage.pop(self._file_path)
