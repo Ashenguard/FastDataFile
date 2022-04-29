@@ -1,15 +1,15 @@
 ### Github
 
-![](https://img.shields.io/github/license/Ashengaurd/FastDataFile)
-![](https://img.shields.io/github/v/release/Ashengaurd/FastDataFile)
-![](https://img.shields.io/github/downloads/Ashengaurd/FastDataFile/total)
+![](https://img.shields.io/github/license/Ashenguard/FastDataFile)
+![](https://img.shields.io/github/v/release/Ashenguard/FastDataFile)
+![](https://img.shields.io/github/downloads/Ashenguard/FastDataFile/total)
 ***
 
 ### PYPI
 
-![Downloads](https://static.pepy.tech/personalized-badge/FastDataFile?period=total&units=international_system&left_color=black&right_color=red&left_text=downloads)
-![Downloads](https://static.pepy.tech/personalized-badge/FastDataFile?period=month&units=international_system&left_color=black&right_color=red&left_text=this+month)
-![Downloads](https://static.pepy.tech/personalized-badge/FastDataFile?period=week&units=international_system&left_color=black&right_color=red&left_text=this+week)
+![Downloads](https://static.pepy.tech/personalized-badge/FastDataFile?period=total&units=international_system&left_color=grey&right_color=red&left_text=downloads)
+![Downloads](https://static.pepy.tech/personalized-badge/FastDataFile?period=month&units=international_system&left_color=grey&right_color=red&left_text=this+month)
+![Downloads](https://static.pepy.tech/personalized-badge/FastDataFile?period=week&units=international_system&left_color=grey&right_color=red&left_text=this+week)
 ***
 
 ### Discord
@@ -32,7 +32,7 @@ pip install fastdatafile
 If you are looking for latest beta/alpha, you can use following command
 
 ```shell
-pip install --upgrade git+https://github.com/Ashengaurd/FastDataFile.git
+pip install --upgrade git+https://github.com/Ashenguard/FastDataFile.git
 ```
 
 ***
@@ -62,7 +62,7 @@ from FastDataFile import JSONDataFile
     
     Arguments shown here are default values, You can ignore them if you want to use the default values.
 """
-json_db = JSONDataFile('path/to/file.json', create_if_missing=True, default_data=None, encoding='utf8')
+json_db = JSONDataFile.open('path/to/file.json', create_if_missing=True, default_data=None, encoding='utf8')
 
 """
     Data can be nested tree, You can move in the tree by using `.` as seperator.
