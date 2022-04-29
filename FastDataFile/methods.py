@@ -47,7 +47,7 @@ def get_data(data: Union[dict, list, tuple], path: str):
 def set_data(data: Union[dict, list], path: str, value: Any, default: bool = False):
     key, path = get_key_and_path(path)
 
-    if path.replace('\\.', '  ').find('.') > -1:
+    if path is not None:
         # There is still another step further into data
         if isinstance(data, dict):
             if key in data.keys():
@@ -71,7 +71,6 @@ def set_data(data: Union[dict, list], path: str, value: Any, default: bool = Fal
         set_data(data, path, value, default)
     else:
         # Reached to the last section of data, Now data must be set
-        key, path = get_key_and_path(path)
         if isinstance(data, dict) and (default is False or key not in data.keys()):
             data[key] = value
         elif isinstance(data, list):

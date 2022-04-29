@@ -82,7 +82,7 @@ class DataFile:
 
     def add_property(self, name: str, path: str = None, cast=None, default=None, *, get_wrapper: Callable[['DataFile', Any], Any] = None, set_validator: Callable[['DataFile', Any], bool] = None):
         setattr(self, name, DataFileProperty(name, path, cast, get_wrapper, set_validator))
-        setattr(self, name, default)
+        self.set_data(path, default, True)
 
     def __setattr__(self, key, value):
         try:
