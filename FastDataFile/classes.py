@@ -36,7 +36,7 @@ class DataFileProperty:
 class DataFile:
     __storage = {}
 
-    def __init__(self, file_path: str, encoder: DataFileEncoder, create_if_missing: bool = True, default_data=None, encoding='utf8'):
+    def __init__(self, file_path: str, *, encoder: DataFileEncoder, create_if_missing: bool = True, default_data=None, encoding='utf8'):
         if file_path in DataFile.__storage.keys():
             raise DataFileIsOpen(f'Datafile `{file_path}` is currently open somewhere else. Make sure you close it or use Datafile#open instead.')
 
@@ -48,12 +48,13 @@ class DataFile:
 
         self._worker = DataWorker(file_path, encoder, default_data, encoding)
 
-    @staticmethod
-    def open(file_path: str, encoder: DataFileEncoder, create_if_missing: bool = True, default_data=None, encoding='utf8'):
+    @classmethod
+    def open(cls, file_path: str, encoder: DataFileEncoder, create_if_missing: bool = True, default_data=None, encoding='utf8'):
         file_path = file_path if re.match('^\.[/\\\]', file_path) else '.\\' + file_path
         file_path = file_path.replace('\\', '/')
 
-        return DataFile(file_path, encoder, create_if_missing, default_data, encoding) if file_path not in DataFile.__storage.keys() else DataFile.__storage[file_path]
+        print(cls)
+        return cls(file_path, encoder=encoder, create_if_missing=create_if_missing, default_data=default_data, encoding=encoding) if file_path not in DataFile.__storage.keys() else DataFile.__storage[file_path]
 
     def get_data(self, path: str = None, cast: Union[type, Callable[[Any], Any]] = None):
         return self._worker.get_data(path, cast)
@@ -104,20 +105,20 @@ class DataFile:
 
 
 class JSONDataFile(DataFile):
-    def __init__(self, file_path: str, create_if_missing: bool = True, default_data=None, encoding='utf8'):
-        super(JSONDataFile, self).__init__(file_path, DataFileEncoder.JSON, create_if_missing, default_data, encoding)
+    def __init__(self, file_path: str, *, create_if_missing: bool = True, default_data=None, encoding='utf8', **kwargs):
+        super(JSONDataFile, self).__init__(file_path, encoder=DataFileEncoder.JSON, create_if_missing=create_if_missing, default_data=default_data, encoding=encoding)
 
     # noinspection PyMethodOverriding
-    @staticmethod
-    def open(file_path: str, create_if_missing: bool = True, default_data=None, encoding='utf8'):
-        return DataFile.open(file_path, DataFileEncoder.JSON, create_if_missing, default_data, encoding)
+    @classmethod
+    def open(cls, file_path: str, create_if_missing: bool = True, default_data=None, encoding='utf8'):
+        return super(JSONDataFile, cls).open(file_path, DataFileEncoder.JSON, create_if_missing, default_data, encoding)
 
 
 class YAMLDataFile(DataFile):
-    def __init__(self, file_path: str, create_if_missing: bool = True, default_data=None, encoding='utf8'):
-        super(YAMLDataFile, self).__init__(file_path, DataFileEncoder.YAML, create_if_missing, default_data, encoding)
+    def __init__(self, file_path: str, *, create_if_missing: bool = True, default_data=None, encoding='utf8', **kwargs):
+        super(YAMLDataFile, self).__init__(file_path, encoder=DataFileEncoder.YAML, create_if_missing=create_if_missing, default_data=default_data, encoding=encoding)
 
     # noinspection PyMethodOverriding
-    @staticmethod
-    def open(file_path: str, create_if_missing: bool = True, default_data=None, encoding='utf8'):
-        return DataFile.open(file_path, DataFileEncoder.YAML, create_if_missing, default_data, encoding)
+    @classmethod
+    def open(cls, file_path: str, create_if_missing: bool = True, default_data=None, encoding='utf8'):
+        return super(YAMLDataFile, cls).open(file_path, DataFileEncoder.YAML, create_if_missing, default_data, encoding)
